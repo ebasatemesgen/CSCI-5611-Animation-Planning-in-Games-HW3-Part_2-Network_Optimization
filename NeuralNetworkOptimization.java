@@ -10,14 +10,20 @@ public class NeuralNetworkOptimization {
         try {
             List<NeuralNetwork> networks = parseNetworksFromFile(fileName);
             for (NeuralNetwork network : networks) {
-                double[] optimalInput = network.findOptimalInput();
-                // System.out.println("Optimal input for the network: " + Arrays.toString(optimalInput));
-                double[] networkOutput = network.computeOutput(optimalInput);
-                System.out.println("Network output for the optimal input: "
-                        + Arrays.toString(networkOutput));
-                boolean match = network.compareOutputWithExample(networkOutput);
+                //double[] optimalInput = network.findOptimalInput();
+                // System.out.println("Optimal input for the network: " +
+                // Arrays.toString(optimalInput));
+                double[] networkOutput = network
+                        .computeOutput(network.getExampleInput());
+                System.out
+                        .println("Network output for the given example input: "
+                                + Arrays.toString(networkOutput));
                 System.out.println("Example output from file: "
                         + Arrays.toString(network.getExampleOutput()));
+
+                // Uncomment the following lines to check if the computed output matches the example output
+                // boolean match = network.compareOutputWithExample(networkOutput);
+                // 
                 // System.out.println("Does the computed output match the example output? " + match);
             }
         } catch (IOException e) {
@@ -63,6 +69,13 @@ public class NeuralNetworkOptimization {
                     network.setExampleOutput(exampleOutput);
                 }
             }
+
+            if (line.startsWith("Example_Input:")) {
+                double[] exampleInput = parseExampleInput(line);
+                if (network != null) {
+                    network.setExampleInput(exampleInput);
+                }
+            }
         }
         if (inNetwork && network != null) {
             networks.add(network);
@@ -76,6 +89,12 @@ public class NeuralNetworkOptimization {
         return parseBiases(outputStr); // Same parsing logic as biases
     }
 
+    private static double[] parseExampleInput(String line) { // Just a duplicate of the above method (Could be removed)
+        String inputStr = line.substring(line.indexOf(":") + 1).trim();
+        return parseBiases(inputStr);
+    }
+
+    // Parses a 2D array of weights from a line in the file.
     private static double[][] parseWeights(String weightsLine) {
         String[] rows = weightsLine.substring(weightsLine.indexOf("[[") + 2,
                 weightsLine.lastIndexOf("]]")).split("\\], \\[");
@@ -87,6 +106,7 @@ public class NeuralNetworkOptimization {
         return weights;
     }
 
+    // Parses a 1D array of biases from a line in the file.
     private static double[] parseBiases(String biasesLine) {
         biasesLine = biasesLine.substring(biasesLine.indexOf("[[") + 2,
                 biasesLine.lastIndexOf("]]"));

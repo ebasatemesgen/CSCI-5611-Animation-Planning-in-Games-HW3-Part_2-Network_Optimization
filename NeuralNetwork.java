@@ -5,6 +5,7 @@ import java.util.Random;
 public class NeuralNetwork {
    private ArrayList<Layer> layers;
    private double[] exampleOutput;
+   private double[] exampleInput;
 
    public NeuralNetwork() { layers = new ArrayList<Layer>(); }
 
@@ -51,6 +52,8 @@ public class NeuralNetwork {
 
    public double[] getExampleOutput() { return this.exampleOutput; }
 
+   public double[] getExampleInput() { return this.exampleInput; }
+
    // Compute a prediction
    public double[] predict(double[] input) {
       for (Layer l : this.layers) {
@@ -59,7 +62,10 @@ public class NeuralNetwork {
       return input;
    }
 
-   // To set the example output
+   public void setExampleInput(double[] exampleInput) {
+      this.exampleInput = exampleInput;
+   }
+
    public void setExampleOutput(double[] exampleOutput) {
       this.exampleOutput = exampleOutput;
    }
