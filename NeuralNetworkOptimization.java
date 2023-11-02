@@ -6,30 +6,31 @@ public class NeuralNetworkOptimization {
 
     // A class representing a layer of the neural network
     public static class Layer {
-        double[][] weights;
-        double[] biases;
-        boolean relu;
+            double[][] weights;
+            double[] biases;
+            boolean relu;
 
-    public Layer(double[][] weights, double[] biases, boolean relu) {
-        this.weights = weights;
-        this.biases = biases;
-        this.relu = relu;
-    }
-
-        // Method to compute the output of the layer
-        public double[] computeOutput(double[] input) {
-            double[] output = new double[biases.length];
-            for (int i = 0; i < weights.length; i++) {
-                for (int j = 0; j < input.length; j++) {
-                    output[i] += weights[i][j] * input[j];
-                }
-                output[i] += biases[i];
-                if (relu && output[i] < 0) {
-                    output[i] = 0; // Applying ReLU activation function
-                }
+            public Layer(double[][] weights, double[] biases, boolean relu) {
+                this.weights = weights;
+                this.biases = biases;
+                this.relu = relu;
             }
-            return output;
-        }
+
+            // Method to compute the output of the layer
+            public double[] computeOutput(double[] input) {
+                double[] output = new double[biases.length];
+                for (int i = 0; i < weights.length; i++) {
+                    for (int j = 0; j < input.length; j++) {
+                        output[i] += weights[i][j] * input[j];
+                    }
+                    output[i] += biases[i];
+                    if (relu && output[i] < 0) {
+                        output[i] = 0; // Applying ReLU activation function
+                    }
+                }
+  
+                return output;
+            }
     }
 
     // A class to represent the neural network
@@ -37,6 +38,7 @@ public class NeuralNetworkOptimization {
         List<Layer> layers = new ArrayList<>();
         
         double[] exampleOutput;
+        double[] exampleInput;
 
         public void addLayer(Layer layer) {
             layers.add(layer);
@@ -76,6 +78,9 @@ public class NeuralNetworkOptimization {
     public void setExampleOutput(double[] exampleOutput) {
         this.exampleOutput = exampleOutput;
     }
+    public void setExampleInput(double[] exampleInput) {
+        this.exampleInput = exampleInput;
+    }
 
     // To Compare with Example Output from Our Network (I don't expect it to match but incase it does)
     public boolean compareOutputWithExample(double[] computedOutput) {
@@ -94,10 +99,18 @@ public class NeuralNetworkOptimization {
             for (NeuralNetwork network : networks) {
                 double[] optimalInput = network.findOptimalInput();
                 // System.out.println("Optimal input for the network: " + Arrays.toString(optimalInput));
-                double[] networkOutput = network.computeOutput(optimalInput);
-                System.out.println("Network output for the optimal input: " + Arrays.toString(networkOutput));
+                double[] networkOutput = network.computeOutput(network.exampleInput);
+                System.out.println("Network output for the given example input: " + Arrays.toString(networkOutput));
+
+
+
                 boolean match = network.compareOutputWithExample(networkOutput);
-                            System.out.println("Example output from file: " + Arrays.toString(network.exampleOutput));
+                
+                // Here is the example output from the file
+                System.out.println("Example output from file: " + Arrays.toString(network.exampleOutput));
+
+
+
                 // System.out.println("Does the computed output match the example output? " + match);
             }
         } catch (IOException e) {
@@ -141,6 +154,13 @@ public class NeuralNetworkOptimization {
                     network.setExampleOutput(exampleOutput);
                 }
             }
+
+            if (line.startsWith("Example_Input:")) {
+                double[] exampleInput = parseExampleInput(line);
+                if (network != null) {
+                    network.setExampleInput(exampleInput);
+                }
+            }
         }
         if (inNetwork && network != null) {
             networks.add(network); 
@@ -152,6 +172,14 @@ public class NeuralNetworkOptimization {
         String outputStr = line.substring(line.indexOf(":") + 1).trim();
         return parseBiases(outputStr); // Same parsing logic as biases
     }
+
+    private static double[] parseExampleInput(String line) {
+        // Assuming the input is formatted like the output
+        String inputStr = line.substring(line.indexOf(":") + 1).trim();
+        // Parse the input in the same way as the biases
+        return parseBiases(inputStr);
+    }
+
     private static double[][] parseWeights(String weightsLine) {
         String[] rows = weightsLine.substring(weightsLine.indexOf("[[") + 2, weightsLine.lastIndexOf("]]")).split("\\], \\[");
         double[][] weights = new double[rows.length][];
@@ -170,5 +198,3 @@ public class NeuralNetworkOptimization {
                      .toArray();
     }
 }
-
-
