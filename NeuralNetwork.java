@@ -15,7 +15,7 @@ public class NeuralNetwork {
       layers.add(new Layer(weights, biases, relu));
    }
 
-   // Method to compute the output of the network
+   // Method to compute the output (prediction) of the network
    public double[] computeOutput(double[] input) {
       double[] output = input;
       for (Layer layer : layers) {
@@ -53,14 +53,6 @@ public class NeuralNetwork {
    public double[] getExampleOutput() { return this.exampleOutput; }
 
    public double[] getExampleInput() { return this.exampleInput; }
-
-   // Compute a prediction
-   public double[] predict(double[] input) {
-      for (Layer l : this.layers) {
-         input = l.computeOutput(input);
-      }
-      return input;
-   }
 
    public void setExampleInput(double[] exampleInput) {
       this.exampleInput = exampleInput;
