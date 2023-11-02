@@ -51,6 +51,14 @@ public class NeuralNetwork {
 
    public double[] getExampleOutput() { return this.exampleOutput; }
 
+   // Compute a prediction
+   public double[] predict(double[] input) {
+      for (Layer l : this.layers) {
+         input = l.computeOutput(input);
+      }
+      return input;
+   }
+
    // To set the example output
    public void setExampleOutput(double[] exampleOutput) {
       this.exampleOutput = exampleOutput;

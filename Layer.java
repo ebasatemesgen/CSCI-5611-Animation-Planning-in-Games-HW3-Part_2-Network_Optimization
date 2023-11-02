@@ -14,6 +14,7 @@ public class Layer {
    public int getNodeCount() { return weights[0].length; }
 
    // Method to compute the output of the layer
+   // Uses either ReLU or no activation function
    public double[] computeOutput(double[] input) {
       double[] output = new double[biases.length];
       for (int i = 0; i < weights.length; i++) {
@@ -21,6 +22,7 @@ public class Layer {
             output[i] += weights[i][j] * input[j];
          }
          output[i] += biases[i];
+         // If we are supposed to do ReLU...
          if (relu && output[i] < 0) {
             output[i] = 0; // Applying ReLU activation function
          }
