@@ -6,37 +6,37 @@ public class NeuralNetworkOptimization {
 
     // A class representing a layer of the neural network
     public static class Layer {
-            double[][] weights;
-            double[] biases;
-            boolean relu;
+        double[][] weights;
+        double[] biases;
+        boolean relu;
 
-            public Layer(double[][] weights, double[] biases, boolean relu) {
-                this.weights = weights;
-                this.biases = biases;
-                this.relu = relu;
-            }
+        public Layer(double[][] weights, double[] biases, boolean relu) {
+            this.weights = weights;
+            this.biases = biases;
+            this.relu = relu;
+        }
 
-            // Method to compute the output of the layer
-            public double[] computeOutput(double[] input) {
-                double[] output = new double[biases.length];
-                for (int i = 0; i < weights.length; i++) {
-                    for (int j = 0; j < input.length; j++) {
-                        output[i] += weights[i][j] * input[j];
-                    }
-                    output[i] += biases[i];
-                    if (relu && output[i] < 0) {
-                        output[i] = 0; // Applying ReLU activation function
-                    }
+        // Method to compute the output of the layer
+        public double[] computeOutput(double[] input) {
+            double[] output = new double[biases.length];
+            for (int i = 0; i < weights.length; i++) {
+                for (int j = 0; j < input.length; j++) {
+                    output[i] += weights[i][j] * input[j];
                 }
-  
-                return output;
+                output[i] += biases[i];
+                if (relu && output[i] < 0) {
+                    output[i] = 0; // Applying ReLU activation function
+                }
             }
+
+            return output;
+        }
     }
 
     // A class to represent the neural network
     public static class NeuralNetwork {
         List<Layer> layers = new ArrayList<>();
-        
+
         double[] exampleOutput;
         double[] exampleInput;
 
@@ -74,22 +74,21 @@ public class NeuralNetworkOptimization {
             return bestInput;
         }
 
-    // To set the example output
-    public void setExampleOutput(double[] exampleOutput) {
-        this.exampleOutput = exampleOutput;
-    }
-    public void setExampleInput(double[] exampleInput) {
-        this.exampleInput = exampleInput;
-    }
+        // To set the example output
+        public void setExampleOutput(double[] exampleOutput) {
+            this.exampleOutput = exampleOutput;
+        }
 
-    // To Compare with Example Output from Our Network (I don't expect it to match but incase it does)
-    public boolean compareOutputWithExample(double[] computedOutput) {
-        return Arrays.equals(computedOutput, this.exampleOutput);
-    }
+        public void setExampleInput(double[] exampleInput) {
+            this.exampleInput = exampleInput;
+        }
 
-
+        public boolean compareOutputWithExample(double[] computedOutput) {
+            return Arrays.equals(computedOutput, this.exampleOutput);
+        }
 
     }
+
     public static void main(String[] args) {
         // Assume "networks.txt" is in the current working directory
         // Or provide the full path to the file
@@ -97,20 +96,16 @@ public class NeuralNetworkOptimization {
         try {
             List<NeuralNetwork> networks = parseNetworksFromFile(fileName);
             for (NeuralNetwork network : networks) {
-                double[] optimalInput = network.findOptimalInput();
-                // System.out.println("Optimal input for the network: " + Arrays.toString(optimalInput));
+                //double[] optimalInput = network.findOptimalInput();
+                // System.out.println("Optimal input for the network: " +
+                // Arrays.toString(optimalInput));
                 double[] networkOutput = network.computeOutput(network.exampleInput);
                 System.out.println("Network output for the given example input: " + Arrays.toString(networkOutput));
-
-
-
-                boolean match = network.compareOutputWithExample(networkOutput);
-                
-                // Here is the example output from the file
                 System.out.println("Example output from file: " + Arrays.toString(network.exampleOutput));
 
-
-
+                // Uncomment the following lines to check if the computed output matches the example output
+                // boolean match = network.compareOutputWithExample(networkOutput);
+                // 
                 // System.out.println("Does the computed output match the example output? " + match);
             }
         } catch (IOException e) {
@@ -127,8 +122,8 @@ public class NeuralNetworkOptimization {
 
         while ((line = reader.readLine()) != null) {
             line = line.trim(); // Trim the line to remove leading and trailing spaces
-            if (line.isEmpty()) continue; // Skip empty lines
-
+            if (line.isEmpty())
+                continue; // Skip empty lines
 
             // System.out.println(line);
             if (line.startsWith("Layers:")) {
@@ -163,38 +158,40 @@ public class NeuralNetworkOptimization {
             }
         }
         if (inNetwork && network != null) {
-            networks.add(network); 
+            networks.add(network);
         }
         reader.close();
         return networks;
     }
+
     private static double[] parseExampleOutput(String line) {
         String outputStr = line.substring(line.indexOf(":") + 1).trim();
         return parseBiases(outputStr); // Same parsing logic as biases
     }
 
-    private static double[] parseExampleInput(String line) {
-        // Assuming the input is formatted like the output
+    private static double[] parseExampleInput(String line) { // Just a duplicate of the above method (Could be removed)
         String inputStr = line.substring(line.indexOf(":") + 1).trim();
-        // Parse the input in the same way as the biases
         return parseBiases(inputStr);
     }
 
+    // Parses a 2D array of weights from a line in the file.
     private static double[][] parseWeights(String weightsLine) {
-        String[] rows = weightsLine.substring(weightsLine.indexOf("[[") + 2, weightsLine.lastIndexOf("]]")).split("\\], \\[");
+        String[] rows = weightsLine.substring(weightsLine.indexOf("[[") + 2, weightsLine.lastIndexOf("]]"))
+                .split("\\], \\[");
         double[][] weights = new double[rows.length][];
         for (int i = 0; i < rows.length; i++) {
             weights[i] = Arrays.stream(rows[i].split(", "))
-                               .mapToDouble(Double::parseDouble)
-                               .toArray();
+                    .mapToDouble(Double::parseDouble)
+                    .toArray();
         }
         return weights;
     }
 
+    // Parses a 1D array of biases from a line in the file.
     private static double[] parseBiases(String biasesLine) {
         biasesLine = biasesLine.substring(biasesLine.indexOf("[[") + 2, biasesLine.lastIndexOf("]]"));
         return Arrays.stream(biasesLine.split("\\], \\["))
-                     .mapToDouble(Double::parseDouble)
-                     .toArray();
+                .mapToDouble(Double::parseDouble)
+                .toArray();
     }
 }
