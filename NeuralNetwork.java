@@ -54,6 +54,19 @@ public class NeuralNetwork {
 
    public double[] getExampleInput() { return this.exampleInput; }
 
+   public void learn(double[] expected, double[] input, double alpha) {
+      ArrayList<double[]> inputs = new ArrayList<double[]>();
+      inputs.add(input); // The original input needs to be in the rotation...
+      double[] bias = new double[input.length];
+      Arrays.fill(bias, 0.0);
+      for (int i = 0; i < layers.size() - 1; i++) {
+         inputs.add(layers.get(i).computeOutput(inputs.get(i)));
+      }
+      for (int i = inputs.size(); i >= 0; i--) {
+         bias = this.layers.get(i).learn(expected, inputs.get(i), bias, alpha);
+      }
+   }
+
    public void setExampleInput(double[] exampleInput) {
       this.exampleInput = exampleInput;
    }

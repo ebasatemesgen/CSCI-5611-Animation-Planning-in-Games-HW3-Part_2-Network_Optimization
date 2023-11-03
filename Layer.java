@@ -30,6 +30,24 @@ public class Layer {
       return output;
    }
 
+   public double[] learn(double[] expected, double[] input, double[] bias,
+         double alpha) {
+      double diff;
+      double[] predicted = this.computeOutput(input);
+      for (int i = 0; i < weights.length; i++) {
+         diff = expected[i] - predicted[i];
+         for (int j = 0; j < input.length; j++) {
+            bias[j] += diff * input[j];
+         }
+      }
+      for (int i = 0; i < weights.length; i++) {
+         for (int j = 0; j < bias.length; j++) {
+            weights[i][j] += alpha * bias[j];
+         }
+      }
+      return bias;
+   }
+
    @Override
    public String toString() {
       return "Layer { weights = " + Arrays.deepToString(weights) + ", biases = "
