@@ -1,3 +1,4 @@
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -12,54 +13,35 @@ public class NeuralNetworkOptimization {
             fileName = args[0];
         }
 
+        // Attempt to open the file.
         try {
             networks = ParseNetworks.fromFile(fileName);
         } catch (IOException e) {
             // Quit if there is a problem
             e.printStackTrace();
+            System.out.println("Error reading from file: " + fileName);
             System.exit(1);
         }
 
-        for (NeuralNetwork network : networks) {
-            //// Part 1
-            // double[] networkOutput = network
-            //         .computeOutput(network.getExampleInput());
-            // System.out.println("Network output for the given example input: "
-            //         + Arrays.toString(networkOutput));
-            // System.out.println("Example output from file: "
-            //         + Arrays.toString(network.getExampleOutput()));
-
-            // Uncomment the following lines to check if the computed output matches the example output
-            // boolean match = network.compareOutputWithExample(networkOutput);
-            // 
-            // System.out.println("Does the computed output match the example output? " + match);
-
-            double[] optimalInput = network.findOptimalInput();
-            System.out.println("Optimal input from Random Search: [");
-            for (double val : optimalInput) {
-                System.out.println("\t" + val);
+        // Attempt to write the solutions file.
+        try {
+            FileWriter outFile = new FileWriter("solutions.txt");
+            int i;
+            for (NeuralNetwork network : networks) {
+                // Find the solution for each network.
+                double[] optimum = network.cem();
+                // Print the comma-separated results
+                for (i = 0; i < optimum.length - 1; i++) {
+                    outFile.write(optimum[i] + ", ");
+                }
+                outFile.write(optimum[i] + "\n");
             }
-            System.out.println("]");
-
-            double[] optimum = network.cem();
-            System.out.println("Optimal input from Gaussian: [");
-            for (double val : optimum) {
-                System.out.println("\t" + val);
-            }
-            System.out.println("]");
-
-            System.out.println("Vector length from Random Search: "
-                    + vectorLength(network.computeOutput(optimalInput)));
-            System.out.println("Vector length from Gaussian: "
-                    + vectorLength(network.computeOutput(optimum)));
+            outFile.close();
+        } catch (IOException e) {
+            // Quit if there is a problem
+            e.printStackTrace();
+            System.out.println("Error writing to file: solutions.txt");
+            System.exit(2);
         }
-    }
-
-    public static double vectorLength(double[] vec) {
-        double sum = 0;
-        for (double x : vec) {
-            sum += x * x;
-        }
-        return Math.sqrt(sum);
     }
 }

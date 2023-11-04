@@ -98,7 +98,6 @@ public class NeuralNetwork {
          }
          iter++;
       }
-      System.out.println("Iterations: " + iter);
       return bestMeans;
    }
 
@@ -123,10 +122,6 @@ public class NeuralNetwork {
       return bestInput;
    }
 
-   public double[] getExampleOutput() { return this.exampleOutput; }
-
-   public double[] getExampleInput() { return this.exampleInput; }
-
    public void learn(double[] expected, double[] input, double alpha) {
       ArrayList<double[]> inputs = new ArrayList<double[]>();
       inputs.add(input); // The original input needs to be in the rotation...
@@ -139,6 +134,10 @@ public class NeuralNetwork {
          bias = this.layers.get(i).learn(expected, inputs.get(i), bias, alpha);
       }
    }
+
+   public double[] getExampleOutput() { return this.exampleOutput; }
+
+   public double[] getExampleInput() { return this.exampleInput; }
 
    public void setExampleInput(double[] exampleInput) {
       this.exampleInput = exampleInput;
